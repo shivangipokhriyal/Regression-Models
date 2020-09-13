@@ -1,0 +1,126 @@
+---
+title: "Regression Models Course Project"
+author: "Shivangi"
+date: "9/1/2020"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+setwd('C:/Users/comp/Documents/CourseraR/Regression Models')
+```
+
+## INTRODUCTION
+
+You work for Motor Trend, a magazine about the automobile industry. Looking at 
+a data set of a collection of cars, they are interested in exploring the 
+relationship between a set of variables and miles per gallon (MPG) (outcome). 
+They are particularly interested in the following two questions:
+  
+1. “Is an automatic or manual transmission better for MPG”   
+2. "Quantify the MPG difference between automatic and manual transmissions"
+
+## LOADING THE DATASET
+
+Take the {\verb|mtcars|}mtcars data set and write up an analysis to 
+answer their question using regression models and exploratory data analyses.
+   
+```{r cars}
+carsdata <- mtcars
+head(carsdata)
+```
+
+
+```{r}
+summary(carsdata)
+
+```
+## CLEANING DATA
+
+```{r}
+carsdata[,'am']<-as.factor(carsdata[,'am'])
+carsdata[,'cyl']<-as.factor(carsdata[,'cyl'])
+carsdata[,'vs']<-as.factor(carsdata[,'vs'])
+carsdata[,'gear']<-as.factor(carsdata[,'gear'])
+carsdata[,'carb']<-as.factor(carsdata[,'carb'])
+```
+
+
+## REGRESSION MODELLING
+  
+  Considering four models that can play a substantial role in affecting the mpg outcome of the cars.
+```{r}
+mdl1 <- lm(mpg~am,data=carsdata)
+
+mdl2 <- lm(mpg~.,data=carsdata)
+
+coef(mdl1)
+coef(mdl2)
+```
+```{r}
+summary(mdl1)
+confint(mdl1)
+```
+Let’s just begin with a simple linear regression of MPG vs automatic/manual transmissions. The assumptions are that the linear model is appropriate for the mean value of yi, and the error distribution should be normally distributed and independent.
+
+  
+  
+From both the plots in Figure one, the results of our coefficient summary, small p-value, and exclusion of 0 in the confidence internval, we fail to reject the null hypothesis that tranmission affects MPG.
+
+## MULTIVARIATE ANALYSIS
+  
+
+While we are exploring MPG for manual vs automatic transmissions, we know that including new variables will increase standard errors of coefficient estimates of other correlated regressors. However, we need to be cautious not to omit variables because that will result in bias in coefficients of regressors which are correlated to the omitted variables.
+
+```{R}
+summary(mdl2)
+```
+
+
+
+According to this summary, the significant variables in relation to the mpg are cyl(cylinders), hp(horsepower) and wt(weight)
+
+## COMPARISON OF MDL1 AND MDL2
+  
+  
+To verify that the multivariate model from step is the better fit, use ANOVA to compare the two models.
+
+```{r}
+anova(mdl1,mdl2)
+```
+
+Upon comparing the two models, the difference is significant, leading us to rule out the simpler model.
+
+
+
+Visually, it may be easier to see if we plot this best fit model.
+This is done in Figure 2 in the Appendix
+
+```{r}
+confint(mdl2)[9,]
+
+```
+Since the confidence interval includes 0 and the p-value is greater than .05, the difference between an automatic transmission and a manual transmission does not significantly impact mpg(miles per gallon). It does however show that an automatic transmission is greater than a manual transmission.
+
+## CONCLUSION
+
+    
+Upon review of the the models, the best fit in Figure 2, it is shown that the Normal Q-Q graph is normally distributed and the Scale-Location graph has a a steady variance. This is improved from Figure 1 where only am(transmission type) was compared with mpg. Upon further review, it was determined that am did not have a significant impact on mpg.
+
+## APPENDIX
+
+  
+### FIGURE 1
+
+```{r}
+par(mfrow=c(2,2))
+plot(mdl1); 
+abline(mdl1)
+```
+### FIGURE 2
+
+```{r}
+par(mfrow=c(2,2))
+plot(mdl2); 
+abline(mdl2$intercept)
+```
